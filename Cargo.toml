@@ -1,0 +1,6 @@
+[package]
+name = "lcov-tool"
+version = "0.1.0"
+authors = [ "holyshared <holy.shared.design@gmail.com>" ]
+
+[dependencies]

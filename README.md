@@ -1,1 +1,1 @@
-# lcovman
+# lcov-tool
