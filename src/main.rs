@@ -1,6 +1,4 @@
-#[cfg(test)]
-mod test {
-    #[test]
-    fn it_works() {
-    }
+mod coverage;
+
+fn main() {
 }
