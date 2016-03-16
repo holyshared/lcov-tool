@@ -1,5 +1,7 @@
 # lcov-tool
 
+[![Build Status](https://travis-ci.org/holyshared/lcov-tool.svg?branch=master)](https://travis-ci.org/holyshared/lcov-tool)
+
 ## License
 
 Licensed under either of
