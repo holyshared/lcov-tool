@@ -1,6 +1,9 @@
 [package]
 name = "lcov-tool"
 version = "0.1.0"
-authors = [ "holyshared <holy.shared.design@gmail.com>" ]
+authors = [ "Noritaka Horio <holy.shared.design@gmail.com>" ]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/holyshared/lcov-tool"
+readme = "README.md"
 
 [dependencies]
