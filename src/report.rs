@@ -1,4 +1,4 @@
-use std::path:: { PathBuf };
+use std::path:: { Path, PathBuf };
 use coverage:: { Coverage };
 
 #[derive(Debug)]
@@ -27,8 +27,8 @@ pub struct FileResult {
 }
 
 impl FileResult {
-    pub fn new(path: PathBuf, coverage: Coverage) -> Self {
-        FileResult { path: path, coverage: coverage }
+    pub fn new<P: AsRef<Path>>(path: P, coverage: Coverage) -> Self {
+        FileResult { path: path.as_ref().to_path_buf(), coverage: coverage }
     }
     pub fn coverage(&self) -> &Coverage {
         &self.coverage
@@ -37,16 +37,15 @@ impl FileResult {
 
 #[cfg(test)]
 mod tests {
-    use std::path:: { PathBuf };
     use report:: { Report, FileResult };
     use coverage:: { Coverage };
 
     #[test]
     fn test_sorted_files() {
         let report = Report::new(vec!(
-            FileResult::new(PathBuf::from("test1.rs"), Coverage::new(0.1)),
-            FileResult::new(PathBuf::from("test2.rs"), Coverage::new(0.2)),
-            FileResult::new(PathBuf::from("test3.rs"), Coverage::new(0.3))
+            FileResult::new("test1.rs", Coverage::new(0.1)),
+            FileResult::new("test2.rs", Coverage::new(0.2)),
+            FileResult::new("test3.rs", Coverage::new(0.3))
         ));
         let files = report.sorted_files();
 
