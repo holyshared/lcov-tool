@@ -11,7 +11,7 @@
 use std::cmp:: { PartialEq, PartialOrd, Ordering };
 use std::fmt:: { Display, Binary, Formatter, Result };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Coverage(f64);
 
 impl Coverage {

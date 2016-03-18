@@ -7,3 +7,4 @@ repository = "https://github.com/holyshared/lcov-tool"
 readme = "README.md"
 
 [dependencies]
+lcov-parser = "0.8.0"
