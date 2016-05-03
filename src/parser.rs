@@ -1,7 +1,7 @@
 use std::result:: { Result };
 use lcov_parser:: { LCOVParser, LCOVRecord, RecordParseError };
 use report:: { Report, FileResult };
-use coverage:: { Coverage };
+use processor:: { FileProcessor, ToFileResult };
 
 pub struct ReportParser {
     parser: LCOVParser,
@@ -53,36 +53,6 @@ impl ReportParser {
             Some(processor) => self.files.push(processor.to_file_result()),
             None => {}
         }
-    }
-}
-
-pub struct FileProcessor {
-    name: String,
-    found: u32,
-    hit: u32
-}
-
-impl FileProcessor {
-    pub fn new(name: String) -> Self {
-        FileProcessor {
-            name: name,
-            found: 0,
-            hit: 0
-        }
-    }
-    pub fn name(&self) -> &String {
-        &self.name
-    }
-    pub fn proceed(&mut self, excution_count: u32) {
-        self.found += 1;
-        if excution_count <= 0 {
-            return;
-        }
-        self.hit += 1;
-    }
-    pub fn to_file_result(&self) -> FileResult {
-        let value = f64::from(self.hit) / f64::from(self.found);
-        FileResult::new(self.name.clone(), Coverage::new(value))
     }
 }
 
