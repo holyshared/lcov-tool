@@ -6,13 +6,13 @@ use coverage:: { Coverage };
 pub struct ReportParser {
     parser: LCOVParser,
     files: Vec<FileResult>,
-    counter: Option<HitCounter>
+    processor: Option<FileProcessor>
 }
 
 impl ReportParser {
     pub fn new(report: &str) -> Self {
         let parser = LCOVParser::new(report);
-        ReportParser { parser: parser, files: vec!(), counter: None }
+        ReportParser { parser: parser, files: vec!(), processor: None }
     }
     pub fn parse(&mut self) -> Result<Report, RecordParseError> {
         let records = try!(self.parser.parse());
@@ -36,35 +36,35 @@ impl ReportParser {
 
     pub fn on_source_file(&mut self, name: String) {
         println!("{}", name);
-        self.counter = Some(HitCounter::new(name));
+        self.processor = Some(FileProcessor::new(name));
     }
 
     pub fn on_data(&mut self, excution_count: u32) {
         println!("{}", excution_count);
-        match self.counter.as_mut() {
-            Some(counter) => counter.proceed(excution_count),
+        match self.processor.as_mut() {
+            Some(processor) => processor.proceed(excution_count),
             None => {}
         }
     }
 
     pub fn on_end_of_record(&mut self) {
         println!("{}", "excution_count");
-        match self.counter.as_mut() {
-            Some(counter) => self.files.push(counter.to_file_result()),
+        match self.processor.as_mut() {
+            Some(processor) => self.files.push(processor.to_file_result()),
             None => {}
         }
     }
 }
 
-pub struct HitCounter {
+pub struct FileProcessor {
     name: String,
     found: u32,
     hit: u32
 }
 
-impl HitCounter {
+impl FileProcessor {
     pub fn new(name: String) -> Self {
-        HitCounter {
+        FileProcessor {
             name: name,
             found: 0,
             hit: 0
@@ -81,7 +81,7 @@ impl HitCounter {
         self.hit += 1;
     }
     pub fn to_file_result(&self) -> FileResult {
-        let value = f64::from(self.found) / f64::from(self.hit);
+        let value = f64::from(self.hit) / f64::from(self.found);
         FileResult::new(self.name.clone(), Coverage::new(value))
     }
 }
@@ -90,6 +90,7 @@ impl HitCounter {
 mod tests {
     use std::fs:: { File };
     use parser:: { ReportParser };
+    use coverage:: { Coverage };
     use std::io:: { Read };
 
     #[test]
@@ -100,6 +101,11 @@ mod tests {
 
         let mut parser = ReportParser::new(buffer.as_str());
         let report = parser.parse().unwrap();
-        assert_eq!(report.files().len(), 2);
+        let files = report.files();
+
+        assert_eq!(files.len(), 2);
+
+        let first = files.get(0).unwrap();
+        assert_eq!(first.coverage(), &Coverage::new(0.75));
     }
 }
