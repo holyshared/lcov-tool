@@ -35,12 +35,10 @@ impl ReportParser {
     }
 
     pub fn on_source_file(&mut self, name: String) {
-        println!("{}", name);
         self.processor = Some(FileProcessor::new(name));
     }
 
     pub fn on_data(&mut self, excution_count: u32) {
-        println!("{}", excution_count);
         match self.processor.as_mut() {
             Some(processor) => processor.proceed(excution_count),
             None => {}
@@ -48,7 +46,6 @@ impl ReportParser {
     }
 
     pub fn on_end_of_record(&mut self) {
-        println!("{}", "excution_count");
         match self.processor.as_mut() {
             Some(processor) => self.files.push(processor.to_file_result()),
             None => {}
