@@ -21,6 +21,15 @@ impl Report {
     }
 }
 
+impl Display for Report {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        for file in self.sorted_files().iter() {
+            let _ = try!(write!(f, "{}", file));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct FileResult {
     path: PathBuf,
@@ -38,7 +47,7 @@ impl FileResult {
 
 impl Display for FileResult {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{} {}", self.coverage(), self.path.display())
+        writeln!(f, "{} {}", self.coverage(), self.path.display())
     }
 }
 
