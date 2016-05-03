@@ -55,6 +55,7 @@ impl Display for FileResult {
 mod tests {
     use report:: { Report, FileResult };
     use coverage:: { Coverage };
+    use std::fmt:: { Write };
 
     #[test]
     fn test_sorted_files() {
@@ -72,7 +73,10 @@ mod tests {
 
     #[test]
     fn test_display_file_result() {
+        let mut buffer = String::new();
         let result = FileResult::new("test1.rs", Coverage::new(0.1));
-        println!("{}", result);
+
+        write!(buffer, "{}", result);
+        assert_eq!(buffer, String::from(" 10.00% test1.rs\n"));
     }
 }
