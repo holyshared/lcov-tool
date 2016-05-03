@@ -76,7 +76,7 @@ mod tests {
         let mut buffer = String::new();
         let result = FileResult::new("test1.rs", Coverage::new(0.1));
 
-        write!(buffer, "{}", result);
+        let _ = write!(buffer, "{}", result);
         assert_eq!(buffer, String::from(" 10.00% test1.rs\n"));
     }
 }

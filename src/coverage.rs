@@ -67,6 +67,7 @@ impl Binary for Coverage {
 #[cfg(test)]
 mod tests {
     use coverage:: { Coverage };
+    use std::fmt:: { Write };
 
     #[test]
     fn test_eq() {
@@ -121,12 +122,18 @@ mod tests {
     #[test]
     fn test_format_for_display() {
         let v = Coverage::new(1.0);
-        println!("{}", v);
+        let mut buffer = String::new();
+        let _ = write!(buffer, "{}", v);
+
+        assert_eq!(buffer, String::from("100.00%"));
     }
 
     #[test]
     fn test_format_for_binary() {
         let v = Coverage::new(1.0);
-        println!("{:10.3b}", v);
+        let mut buffer = String::new();
+        let _ = write!(buffer, "{:10.3b}", v);
+
+        assert_eq!(buffer, String::from("   100.000"));
     }
 }
