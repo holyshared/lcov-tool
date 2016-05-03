@@ -50,7 +50,7 @@ impl ReportParser {
     pub fn on_end_of_record(&mut self) {
         println!("{}", "excution_count");
         match self.counter.as_mut() {
-            Some(counter) => self.files.push(FileResult::new(counter.name(), Coverage::new(0.1))),
+            Some(counter) => self.files.push(counter.to_file_result()),
             None => {}
         }
     }
@@ -70,8 +70,8 @@ impl HitCounter {
             hit: 0
         }
     }
-    pub fn name(&self) -> String {
-        self.name.clone()
+    pub fn name(&self) -> &String {
+        &self.name
     }
     pub fn proceed(&mut self, excution_count: u32) {
         self.found += 1;
@@ -79,6 +79,10 @@ impl HitCounter {
             return;
         }
         self.hit += 1;
+    }
+    pub fn to_file_result(&self) -> FileResult {
+        let value = f64::from(self.found) / f64::from(self.hit);
+        FileResult::new(self.name.clone(), Coverage::new(value))
     }
 }
 
