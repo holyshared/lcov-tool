@@ -52,7 +52,7 @@ impl PartialOrd for Coverage {
 
 impl Display for Coverage {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{}%", self.percent())
+        write!(f, "{:6.2}%", self.percent())
     }
 }
 

@@ -1,4 +1,5 @@
 use std::path:: { Path, PathBuf };
+use std::fmt:: { Display, Formatter, Result };
 use coverage:: { Coverage };
 
 #[derive(Debug)]
@@ -35,6 +36,12 @@ impl FileResult {
     }
 }
 
+impl Display for FileResult {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "{} {}", self.coverage(), self.path.display())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use report:: { Report, FileResult };
@@ -52,5 +59,11 @@ mod tests {
         assert_eq!(&Coverage::new(0.3), files.get(0).unwrap().coverage());
         assert_eq!(&Coverage::new(0.2), files.get(1).unwrap().coverage());
         assert_eq!(&Coverage::new(0.1), files.get(2).unwrap().coverage());
+    }
+
+    #[test]
+    fn test_display_file_result() {
+        let result = FileResult::new("test1.rs", Coverage::new(0.1));
+        println!("{}", result);
     }
 }
