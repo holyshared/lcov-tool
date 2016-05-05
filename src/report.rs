@@ -1,4 +1,5 @@
 use std::path:: { Path, PathBuf };
+use std::fmt:: { Display, Formatter, Result };
 use coverage:: { Coverage };
 
 #[derive(Debug)]
@@ -20,6 +21,15 @@ impl Report {
     }
 }
 
+impl Display for Report {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        for file in self.sorted_files().iter() {
+            let _ = try!(write!(f, "{}", file));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct FileResult {
     path: PathBuf,
@@ -35,10 +45,17 @@ impl FileResult {
     }
 }
 
+impl Display for FileResult {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        writeln!(f, "{} {}", self.coverage(), self.path.display())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use report:: { Report, FileResult };
     use coverage:: { Coverage };
+    use std::fmt:: { Write };
 
     #[test]
     fn test_sorted_files() {
@@ -52,5 +69,14 @@ mod tests {
         assert_eq!(&Coverage::new(0.3), files.get(0).unwrap().coverage());
         assert_eq!(&Coverage::new(0.2), files.get(1).unwrap().coverage());
         assert_eq!(&Coverage::new(0.1), files.get(2).unwrap().coverage());
+    }
+
+    #[test]
+    fn test_display_file_result() {
+        let mut buffer = String::new();
+        let result = FileResult::new("test1.rs", Coverage::new(0.1));
+
+        let _ = write!(buffer, "{}", result);
+        assert_eq!(buffer, String::from(" 10.00% test1.rs\n"));
     }
 }
