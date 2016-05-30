@@ -2,11 +2,13 @@ mod coverage;
 mod report;
 mod parser;
 mod processor;
+mod command;
 
 extern crate clap;
 extern crate lcov_parser;
 
 use clap:: { App, SubCommand, Arg };
+use command:: { coverage };
 
 fn main() {
     let file = Arg::with_name("file")
