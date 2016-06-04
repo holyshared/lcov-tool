@@ -40,6 +40,7 @@ pub fn coverage<'a>(args: &ArgMatches<'a>) -> Result<(), CoverageError> {
     let mut parser = ReportParser::new(&content[..]);
     let report = try!(parser.parse());
 
+    println!("\nCoverage report of file\n");
     println!("{}", report);
     Ok(())
 }

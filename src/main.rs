@@ -11,7 +11,7 @@ use clap:: { App, SubCommand, Arg };
 use command:: { coverage };
 
 fn main() {
-    let file = Arg::with_name("file")
+    let file = Arg::with_name("report")
         .value_name("FILE")
         .help("The report file of LCOV");
     let coverage_command = SubCommand::with_name("coverage")
