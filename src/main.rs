@@ -7,7 +7,7 @@ mod command;
 extern crate clap;
 extern crate lcov_parser;
 
-use clap:: { App, SubCommand, Arg };
+use clap:: { App };
 use command:: { coverage_parser, coverage_action };
 
 fn main() {
