@@ -37,6 +37,7 @@ fn main() {
         .author("Noritaka Horio <holy.shared.design@gmail.com>")
         .about("LCOV report of utility tool")
         .setting(AppSettings::SubcommandRequiredElseHelp)
+        .setting(AppSettings::ColoredHelp)
         .subcommand(coverage_parser());
 
     match run(app.get_matches().subcommand()) {

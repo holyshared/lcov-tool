@@ -5,7 +5,7 @@ use std::convert:: { From };
 use std::fmt:: { Display, Formatter, Error as FormatError };
 use lcov_parser:: { RecordParseError };
 use parser:: { ReportParser };
-use clap:: { App, Arg, ArgMatches, SubCommand };
+use clap:: { App, Arg, ArgMatches, SubCommand, AppSettings };
 
 pub enum CoverageError {
     IOError(Error),
@@ -38,7 +38,10 @@ pub fn coverage_parser<'a, 'b>() -> App<'a, 'b> {
         .value_name("FILE")
         .help("The report file of LCOV");
 
-    SubCommand::with_name("coverage").arg(file)
+    SubCommand::with_name("coverage")
+        .about("Display code coverage of report file")
+        .setting(AppSettings::ColoredHelp)
+        .arg(file)
 }
 
 pub fn coverage_action<'a>(args: &ArgMatches<'a>) -> Result<(), CoverageError> {
