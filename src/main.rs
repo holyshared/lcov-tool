@@ -8,26 +8,20 @@ extern crate clap;
 extern crate lcov_parser;
 
 use clap:: { App, SubCommand, Arg };
-use command:: { coverage };
+use command:: { coverage_parser, coverage_action };
 
 fn main() {
-    let file = Arg::with_name("report")
-        .value_name("FILE")
-        .help("The report file of LCOV");
-    let coverage_command = SubCommand::with_name("coverage")
-        .arg(file);
-
     let app = App::new("lcovtool")
         .version("1.0")
         .author("Noritaka Horio <holy.shared.design@gmail.com>")
         .about("LCOV report of utility tool")
-        .subcommand(coverage_command);
+        .subcommand(coverage_parser());
 
     let matches = app.get_matches();
 
     match matches.subcommand() {
         ("coverage", Some(args)) => {
-            match coverage(args) {
+            match coverage_action(args) {
                 Ok(_) => { println!("ok"); },
                 Err(err) => { println!("{}", err); }
             };
