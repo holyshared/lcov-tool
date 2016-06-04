@@ -7,7 +7,7 @@ mod command;
 extern crate clap;
 extern crate lcov_parser;
 
-use clap:: { App };
+use clap:: { App, AppSettings };
 use command:: { coverage_parser, coverage_action };
 
 fn main() {
@@ -15,6 +15,7 @@ fn main() {
         .version("1.0")
         .author("Noritaka Horio <holy.shared.design@gmail.com>")
         .about("LCOV report of utility tool")
+        .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(coverage_parser());
 
     let matches = app.get_matches();
@@ -26,6 +27,6 @@ fn main() {
                 Err(err) => { println!("{}", err); }
             };
         },
-        _ => { }
+        _ => { println!("{}", matches.usage()); }
     }
 }
