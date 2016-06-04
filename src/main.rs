@@ -7,8 +7,29 @@ mod command;
 extern crate clap;
 extern crate lcov_parser;
 
-use clap:: { App, AppSettings };
-use command:: { coverage_parser, coverage_action };
+use clap:: { App, ArgMatches, AppSettings };
+use command:: { coverage_parser, coverage_action, CoverageError };
+use std::result:: { Result };
+use std::convert:: { From };
+use std::fmt:: { Display, Formatter, Error as FormatError };
+
+pub enum CommandError {
+    Coverage(CoverageError)
+}
+
+impl From<CoverageError> for CommandError {
+    fn from(error: CoverageError) -> Self {
+        CommandError::Coverage(error)
+    }
+}
+
+impl Display for CommandError {
+    fn fmt(&self, formatter: &mut Formatter) -> Result<(), FormatError> {
+        match self {
+            &CommandError::Coverage(ref error) => write!(formatter, "{}", error)
+        }
+    }
+}
 
 fn main() {
     let app = App::new("lcovtool")
@@ -18,15 +39,15 @@ fn main() {
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(coverage_parser());
 
-    let matches = app.get_matches();
+    match run(app.get_matches().subcommand()) {
+        Ok(_) => { },
+        Err(error) => println!("{}", error)
+    }
+}
 
-    match matches.subcommand() {
-        ("coverage", Some(args)) => {
-            match coverage_action(args) {
-                Ok(_) => { println!("ok"); },
-                Err(err) => { println!("{}", err); }
-            };
-        },
-        _ => { println!("{}", matches.usage()); }
+pub fn run<'a>(subcommand: (&str, Option<&ArgMatches<'a>>)) -> Result<(), CommandError> {
+    match subcommand {
+        ("coverage", Some(args)) => Ok(try!(coverage_action(args))),
+        _ => Ok(())
     }
 }
