@@ -9,7 +9,7 @@ readme = "README.md"
 homepage = "https://github.com/holyshared/lcov-tool"
 
 [dependencies]
-clap = "2.5.1"
+clap = "2.9.1"
 lcov-parser = "1.1.1"
 
 [[bin]]
