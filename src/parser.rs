@@ -63,16 +63,22 @@ mod tests {
     #[test]
     fn test_parse_report() {
         let mut buffer = String::new();
-        let mut f = File::open("tests/fixtures/report.lcov").unwrap();
+        let mut f = File::open("tests/fixtures/fixture.info").unwrap();
         let _ = f.read_to_string(&mut buffer);
 
         let mut parser = ReportParser::new(buffer.as_str());
         let report = parser.parse().unwrap();
         let files = report.files();
 
-        assert_eq!(files.len(), 2);
+        assert_eq!(files.len(), 3);
 
         let first = files.get(0).unwrap();
-        assert_eq!(first.coverage(), &Coverage::new(0.75));
+        assert_eq!(first.coverage(), &Coverage::new(1.0));
+
+        let second = files.get(1).unwrap();
+        assert_eq!(second.coverage(), &Coverage::new(1.0));
+
+        let third = files.get(2).unwrap();
+        assert_eq!(third.coverage(), &Coverage::new(0.875));
     }
 }
