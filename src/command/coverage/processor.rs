@@ -1,5 +1,5 @@
-use report:: { FileResult };
 use coverage:: { Coverage };
+use report:: { FileResult };
 
 pub struct FileProcessor {
     name: String,
@@ -14,9 +14,6 @@ impl FileProcessor {
             found: 0,
             hit: 0
         }
-    }
-    pub fn name(&self) -> &String {
-        &self.name
     }
     pub fn proceed(&mut self, excution_count: u32) {
         self.found += 1;

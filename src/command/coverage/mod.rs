@@ -1,11 +1,14 @@
-use std::fs:: { File };
-use std::io:: { Read, Error, Result as IOResult };
+mod parser;
+mod processor;
+
+use std::io:: { Error };
 use std::result:: { Result };
 use std::convert:: { From };
 use std::fmt:: { Display, Formatter, Error as FormatError };
-use lcov_parser:: { RecordParseError };
-use parser:: { ReportParser };
+use lcov_parser:: { ParseError as LCOVParseError, RecordParseError };
 use clap:: { App, Arg, ArgMatches, SubCommand, AppSettings };
+
+use command::coverage::parser:: { ReportParser };
 
 pub enum CoverageError {
     IOError(Error),
@@ -21,6 +24,15 @@ impl From<RecordParseError> for CoverageError {
 impl From<Error> for CoverageError {
     fn from(error: Error) -> Self {
         CoverageError::IOError(error)
+    }
+}
+
+impl From<LCOVParseError> for CoverageError {
+    fn from(error: LCOVParseError) -> Self {
+        match error {
+            LCOVParseError::IOError(err) => CoverageError::IOError(err),
+            LCOVParseError::RecordParseError(err) => CoverageError::ParseError(err)
+        }
     }
 }
 
@@ -46,19 +58,22 @@ pub fn coverage_parser<'a, 'b>() -> App<'a, 'b> {
 
 pub fn coverage_action<'a>(args: &ArgMatches<'a>) -> Result<(), CoverageError> {
     let report_file = args.value_of("report").unwrap_or("coverage.lcov");
-    let content = try!(read_report_from(report_file));
-
-    let mut parser = ReportParser::new(&content[..]);
+    let mut parser = try!(ReportParser::from_file(report_file));
     let report = try!(parser.parse());
+
+
+
+//    let mut parser = ReportParser::new(&content[..]);
 
     println!("\nCoverage report of file\n");
     println!("{}", report);
     Ok(())
 }
-
+/*
 fn read_report_from(path: &str) -> IOResult<String> {
     let mut file = try!(File::open(path));
     let mut buffer = String::new();
     let _ = try!(file.read_to_string(&mut buffer));
     Ok(buffer.clone())
 }
+*/

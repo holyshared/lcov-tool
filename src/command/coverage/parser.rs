@@ -1,26 +1,40 @@
 use std::result:: { Result };
-use lcov_parser:: { LCOVParser, LCOVRecord, RecordParseError };
+
+use std::fs:: { File };
+use std::io:: { Result as IOResult };
+use std::path:: { Path };
+
+use lcov_parser:: { LCOVParser, LCOVRecord, LineData, FromFile, ParseError };
 use report:: { Report, FileResult };
-use processor:: { FileProcessor, ToFileResult };
+use command::coverage::processor:: { FileProcessor, ToFileResult };
 
 pub struct ReportParser {
-    parser: LCOVParser,
     files: Vec<FileResult>,
+    parser: LCOVParser<File>,
     processor: Option<FileProcessor>
 }
 
 impl ReportParser {
-    pub fn new(report: &str) -> Self {
-        let parser = LCOVParser::new(report);
-        ReportParser { parser: parser, files: vec!(), processor: None }
-    }
-    pub fn parse(&mut self) -> Result<Report, RecordParseError> {
-        let records = try!(self.parser.parse());
-
-        for record in records.iter() {
-            self.on_parsed(record);
+    pub fn new(parser: LCOVParser<File>) -> Self {
+        ReportParser {
+            parser: parser,
+            processor: None,
+            files: vec!(),
         }
+    }
+    pub fn from_file<P: AsRef<Path>>(path: P) -> IOResult<Self> {
+        let parser = try!(LCOVParser::from_file(path));
+        Ok(ReportParser::new(parser))
+    }
+    pub fn parse(&mut self) -> Result<Report, ParseError> {
+        loop {
+            let result = try!(self.parser.next());
 
+            match result {
+                Some(ref record) => self.on_parsed(record),
+                None => { break; }
+            }
+        }
         let report = Report::new(self.files.clone());
         Ok(report)
     }
@@ -28,7 +42,7 @@ impl ReportParser {
     pub fn on_parsed(&mut self, record: &LCOVRecord) {
         match record {
             &LCOVRecord::SourceFile(ref name) => self.on_source_file(name.clone()),
-            &LCOVRecord::Data(_, excution_count, _) => self.on_data(excution_count),
+            &LCOVRecord::Data(ref data) => self.on_data(data),
             &LCOVRecord::EndOfRecord => self.on_end_of_record(),
             _ => {}
         }
@@ -38,9 +52,9 @@ impl ReportParser {
         self.processor = Some(FileProcessor::new(name));
     }
 
-    pub fn on_data(&mut self, excution_count: u32) {
+    pub fn on_data(&mut self, data: &LineData) {
         match self.processor.as_mut() {
-            Some(processor) => processor.proceed(excution_count),
+            Some(processor) => processor.proceed(data.count),
             None => {}
         }
     }
@@ -55,18 +69,12 @@ impl ReportParser {
 
 #[cfg(test)]
 mod tests {
-    use std::fs:: { File };
-    use parser:: { ReportParser };
+    use command::coverage::parser:: { ReportParser };
     use coverage:: { Coverage };
-    use std::io:: { Read };
 
     #[test]
     fn test_parse_report() {
-        let mut buffer = String::new();
-        let mut f = File::open("tests/fixtures/fixture.info").unwrap();
-        let _ = f.read_to_string(&mut buffer);
-
-        let mut parser = ReportParser::new(buffer.as_str());
+        let mut parser = ReportParser::from_file("tests/fixtures/fixture.info").unwrap();
         let report = parser.parse().unwrap();
         let files = report.files();
 

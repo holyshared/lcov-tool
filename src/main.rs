@@ -1,7 +1,5 @@
 mod coverage;
 mod report;
-mod parser;
-mod processor;
 mod command;
 
 extern crate clap;
