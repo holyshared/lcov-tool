@@ -62,13 +62,15 @@ mod tests {
         let report = Report::new(vec!(
             FileResult::new("test1.rs", Coverage::new(0.1)),
             FileResult::new("test2.rs", Coverage::new(0.2)),
-            FileResult::new("test3.rs", Coverage::new(0.3))
+            FileResult::new("test3.rs", Coverage::new(0.3)),
+            FileResult::new("test4.rs", Coverage::new(0.0)),
         ));
         let files = report.sorted_files();
 
         assert_eq!(&Coverage::new(0.3), files.get(0).unwrap().coverage());
         assert_eq!(&Coverage::new(0.2), files.get(1).unwrap().coverage());
         assert_eq!(&Coverage::new(0.1), files.get(2).unwrap().coverage());
+        assert_eq!(&Coverage::new(0.0), files.get(3).unwrap().coverage());
     }
 
     #[test]
