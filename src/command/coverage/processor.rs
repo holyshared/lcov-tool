@@ -30,7 +30,10 @@ pub trait ToFileResult {
 
 impl ToFileResult for FileProcessor {
     fn to_file_result(&self) -> FileResult {
-        let value = f64::from(self.hit) / f64::from(self.found);
+        let value = match self.found == 0 {
+            true => 0_f64,
+            false => f64::from(self.hit) / f64::from(self.found),
+        };
         FileResult::new(self.name.clone(), Coverage::new(value))
     }
 }
